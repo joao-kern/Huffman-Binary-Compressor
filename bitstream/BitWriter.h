@@ -9,7 +9,6 @@ class BitWriter
 private:
     uint8_t byte_buffer = 0;
     uint8_t cont_buffer_bits = 0;
-    uint64_t cont_total_bits = 0;
     std::ofstream *file = nullptr;
     void write_byte();
     void flush();
@@ -19,6 +18,7 @@ public:
     ~BitWriter();
 
     void write_bit(bool bit);
+    void write_bytes(char *data, std::size_t size);
     void close_file();
 };
 

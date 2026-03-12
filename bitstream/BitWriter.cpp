@@ -5,14 +5,21 @@
 BitWriter::BitWriter(const std::string path_file)
 {
     file = new std::ofstream(path_file, std::ios::binary);
-
-    file->write(reinterpret_cast<char *>(&cont_total_bits), sizeof(uint64_t));
+    if (!file->is_open())
+    {
+        std::cerr << "File was not opened correctly\n*Check the file path*";
+    }
 }
 
 BitWriter::~BitWriter()
 {
-    delete file;
-    file = nullptr;
+    if (file)
+    {
+        if (file->is_open())
+        {
+            close_file();
+        }
+    }
 }
 
 void BitWriter::write_bit(bool bit)
@@ -22,11 +29,22 @@ void BitWriter::write_bit(bool bit)
         byte_buffer |= 128 >> cont_buffer_bits;
     }
     cont_buffer_bits++;
-    cont_total_bits++;
 
     if (cont_buffer_bits == 8)
     {
         write_byte();
+    }
+}
+
+void BitWriter::write_bytes(char *data, std::size_t size)
+{
+    if (file->is_open())
+    {
+        file->write(reinterpret_cast<char *>(&data), size);
+    }
+    else
+    {
+        std::cerr << "File was not opened correctly\n*Check the file path*";
     }
 }
 
@@ -57,8 +75,6 @@ void BitWriter::close_file()
     if (file->is_open())
     {
         flush();
-        file->seekp(file->beg);
-        file->write(reinterpret_cast<char *>(&cont_total_bits), sizeof(uint64_t));
         file->close();
         delete file;
         file = nullptr;
