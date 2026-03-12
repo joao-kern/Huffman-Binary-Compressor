@@ -1,6 +1,7 @@
 #include "BitWriter.h"
 #include <iostream>
 #include <fstream>
+#include <cstdint>
 
 BitWriter::BitWriter(const std::string path_file)
 {

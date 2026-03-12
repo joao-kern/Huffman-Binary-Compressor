@@ -1,8 +1,9 @@
+#ifndef BITWRITER_H
+#define BITWRITER_H
+
 #include <iostream>
 #include <fstream>
 #include <cstdint>
-#ifndef BITWRITER_H
-#define BITWRITER_H
 
 class BitWriter
 {
