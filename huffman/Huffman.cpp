@@ -2,15 +2,15 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-#include <tuple>
+#include <utility>
 #include <algorithm>
 
-Huffman::Huffman(std::vector<std::tuple<std::size_t, std::string>> &simbols)
+Huffman::Huffman(std::array<std::size_t, 256> &freq_simbols)
 {
     root = nullptr;
     size = 0;
-    current_simbol = "";
-    create_tree(simbols);
+    current_simbol = 0;
+    create_tree(freq_simbols);
     generate_map();
 }
 
@@ -22,23 +22,27 @@ Huffman::~Huffman()
     }
 }
 
-void Huffman::create_tree(std::vector<std::tuple<std::size_t, std::string>> &simbols)
+void Huffman::create_tree(std::array<std::size_t, 256> &freq_simbols)
 {
     std::vector<Node *> Nodes;
-    std::sort(simbols.begin(), simbols.end());
 
-    for (const auto &tuple : simbols)
+    for (int i = 0; i < freq_simbols.size(); i++)
     {
-        Node *n = new Node(std::get<0>(tuple), std::get<1>(tuple));
+        if (freq_simbols[i] == 0)
+        {
+            continue;
+        }
+
+        Node *n = new Node(i, freq_simbols[i], true);
         Nodes.push_back(n);
     }
 
-    std::size_t i = 0;
+    const std::size_t i = 0;
     while (Nodes.size() > 1)
     {
         std::sort(Nodes.begin(), Nodes.end(), [](const Node *a, const Node *b)
                   { return a->freq <= b->freq; });
-        Node *father = new Node(Nodes[i]->freq + Nodes[i + 1]->freq, "");
+        Node *father = new Node(Nodes[i]->freq + Nodes[i + 1]->freq, 0, false);
         father->right = Nodes[i];
         father->left = Nodes[i + 1];
         Nodes.erase(Nodes.begin());
@@ -46,7 +50,14 @@ void Huffman::create_tree(std::vector<std::tuple<std::size_t, std::string>> &sim
         Nodes.push_back(father);
     }
 
-    root = Nodes[0];
+    if (!Nodes.empty())
+    {
+        root = Nodes[0];
+    }
+    else
+    {
+        root = new Node(0, 0, false);
+    }
 
     cursor = root;
 }
@@ -58,7 +69,7 @@ void Huffman::generate_map()
     temp->search(code_map, code);
 }
 
-std::vector<bool> Huffman::encode(std::string simbol)
+std::vector<bool> Huffman::encode(std::uint8_t simbol)
 {
     return code_map[simbol];
 }
@@ -78,17 +89,22 @@ void Huffman::delete_node(Node *n)
 
 bool Huffman::decode(bool bit)
 {
-
     if (bit)
     {
-        cursor = cursor->right;
+        if (cursor->right)
+        {
+            cursor = cursor->right;
+        }
     }
     else
     {
-        cursor = cursor->left;
+        if (cursor->left)
+        {
+            cursor = cursor->left;
+        }
     }
 
-    if (cursor->simbol != "")
+    if (cursor->is_leaf)
     {
         current_simbol = cursor->simbol;
         cursor = root;
@@ -98,7 +114,7 @@ bool Huffman::decode(bool bit)
     return false;
 }
 
-std::string Huffman::get_current_simbol()
+std::uint8_t Huffman::get_current_simbol()
 {
     return current_simbol;
 }

@@ -1,57 +1,65 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
-#include <tuple>
+#include <array>
+#include <utility>
 #include <unordered_map>
 
 class Huffman
 {
 
 public:
-    Huffman(std::vector<std::tuple<std::size_t, std::string>> &simbols);
+    Huffman(std::array<std::size_t, 256> &freq_simbols);
     ~Huffman();
 
-    std::vector<bool> encode(std::string simbol);
+    std::vector<bool> encode(std::uint8_t simbol);
     bool decode(bool bit);
-    std::string get_current_simbol();
+    std::uint8_t get_current_simbol();
 
 private:
-    void create_tree(std::vector<std::tuple<std::size_t, std::string>> &simbols);
+    void create_tree(std::array<std::size_t, 256> &freq_simbols);
     void generate_map();
 
     struct Node
     {
-        Node(const std::size_t freq, const std::string simbol) : left{nullptr}, right{nullptr}, freq{freq}, simbol{simbol}
+        Node(const std::uint8_t simbol, const std::size_t freq, const bool is_leaf) : left{nullptr}, right{nullptr}, freq{freq}, simbol{simbol}, is_leaf{is_leaf}
         {
         }
 
-        void search(std::unordered_map<std::string, std::vector<bool>> &code_map, std::vector<bool> &code)
+        void search(std::unordered_map<std::uint8_t, std::vector<bool>> &code_map, std::vector<bool> &code)
         {
-            if (this->simbol != "")
+            if (this->is_leaf)
             {
                 code_map[this->simbol] = code;
                 return;
             }
             std::vector<bool> code_right = code;
             code_right.push_back(true);
-            this->right->search(code_map, code_right);
+            if (this->right)
+            {
+                this->right->search(code_map, code_right);
+            }
 
             std::vector<bool> code_left = code;
             code_left.push_back(false);
-            this->left->search(code_map, code_left);
+            if (this->left)
+            {
+                this->left->search(code_map, code_left);
+            }
         }
 
         Node *left;
         Node *right;
         std::size_t freq;
-        std::string simbol;
+        std::uint8_t simbol;
+        bool is_leaf;
     };
 
     void delete_node(Node *n);
 
     Node *root;
     Node *cursor;
-    std::unordered_map<std::string, std::vector<bool>> code_map;
+    std::unordered_map<std::uint8_t, std::vector<bool>> code_map;
     size_t size;
-    std::string current_simbol;
+    std::uint8_t current_simbol;
 };
