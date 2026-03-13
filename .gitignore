@@ -36,7 +36,7 @@
 *.exe
 *.out
 *.app
-run
+compressor
 
 # Test files
 *.bin
