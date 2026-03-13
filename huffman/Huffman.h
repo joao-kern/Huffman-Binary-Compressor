@@ -1,3 +1,6 @@
+#ifndef HUFFMAN_H
+#define HUFFMAN_H
+
 #include <iostream>
 #include <cstdint>
 #include <vector>
@@ -63,3 +66,5 @@ private:
     size_t size;
     std::uint8_t current_simbol;
 };
+
+#endif
