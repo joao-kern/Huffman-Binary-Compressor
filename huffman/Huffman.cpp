@@ -26,7 +26,7 @@ void Huffman::create_tree(std::array<std::size_t, 256> &freq_simbols)
 {
     std::vector<Node *> Nodes;
 
-    for (int i = 0; i < freq_simbols.size(); i++)
+    for (std::size_t i = 0; i < freq_simbols.size(); i++)
     {
         if (freq_simbols[i] == 0)
         {
