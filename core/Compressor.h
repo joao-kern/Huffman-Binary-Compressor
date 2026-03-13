@@ -19,7 +19,7 @@ private:
     std::ifstream *file = nullptr;
     void huffman_build(std::array<std::size_t, 256> &freq_simbols);
     std::array<std::size_t, 256> bytes_counter();
-    void write_compressed_file(const std::array<std::size_t, 256> &freq_simbols);
+    void write_compressed_file();
 
 public:
     Compressor(const fs::path path_file);

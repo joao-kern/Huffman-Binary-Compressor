@@ -40,7 +40,7 @@ Compressor::Compressor(const fs::path path_file)
 
     huffman_build(format->freq_simbols);
 
-    write_compressed_file(format->freq_simbols);
+    write_compressed_file();
 }
 
 Compressor::~Compressor()
@@ -103,7 +103,7 @@ std::array<std::size_t, 256> Compressor::bytes_counter()
     return simbols_vec;
 }
 
-void Compressor::write_compressed_file(const std::array<std::size_t, 256> &freq_simbols)
+void Compressor::write_compressed_file()
 {
     bit_writer = new BitWriter(output_path);
 
